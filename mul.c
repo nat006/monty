@@ -1,6 +1,5 @@
 #include "monty.h"
 
-
 /**
  * get_stack_length - Get the length of the stack
  * @head: Stack head
@@ -21,12 +20,12 @@ int get_stack_length(stack_t **head)
 }
 
 /**
- * f_mul - Multiplication function
+ * mul - Multiplication function
  * @head: Stack head
  * @counter: Line number
  * Return: No return
  */
-void f_mul(stack_t **head, unsigned int counter)
+void mul(stack_t **head, unsigned int counter)
 {
     stack_t *current = *head;
     int length = get_stack_length(head);
