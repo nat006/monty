@@ -20,12 +20,12 @@ int get_stack_length(stack_t **head)
 }
 
 /**
- * f_div - Division function
+ * div - Division function
  * @head: Stack head
  * @counter: Line number
  * Return: No return
  */
-void f_div(stack_t **head, unsigned int counter)
+void div(stack_t **head, unsigned int counter)
 {
     stack_t *current = *head;
     int length = get_stack_length(head);
