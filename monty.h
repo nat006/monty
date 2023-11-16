@@ -5,18 +5,16 @@
 #include <unistd.h>
 #include <string.h>
 
-#define STACK_SIZE 1024
-
 /**
- * struct stack_s - Stack structure
- * @stack: Pointer to the stack
- * @size: Current size of the stack
+ * struct StackNode - singly linked list representation of a stack (or pile)
+ * @n: integer (node data)
+ * @prev: points to the previous node in the stack
  */
-typedef struct stack_s
+typedef struct StackNode
 {
-    int stack[STACK_SIZE];
-    size_t size;
-} stack_t;
+    int n;
+    struct StackNode *prev;
+} StackNode;
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -48,10 +46,12 @@ typedef struct instruction_s
 	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-void push(stack_t **stack, unsigned int line_number, char *argument);
-void pall(stack_t **stack, unsigned int line_number);
 void pint(stack_t **stack, unsigned int line_number);
 void pop(stack_t **stack, unsigned int line_number);
-void pall(stack_t *stack);
-int push(stack_t *stack, unsigned int line_number, int value);
+
+void push(StackNode **stack, unsigned int line_number, int n);
+void pall(StackNode **stack, unsigned int line_number);
+
+
+
 #endif
