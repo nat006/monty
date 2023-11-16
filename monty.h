@@ -51,7 +51,7 @@ void pop(stack_t **stack, unsigned int line_number);
 
 void push(StackNode **stack, unsigned int line_number, int n);
 void pall(StackNode **stack, unsigned int line_number);
-
+void clean_exit(int status);
 
 
 #endif
