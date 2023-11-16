@@ -1,60 +1,100 @@
 #include "monty.h"
+#include <ctype.h>
+
 /**
- * push - Pushes an element to the stack.
- * @stack: Double pointer to the beginning of the stack.
- * @line_number: The line number in the file.
- * @argument: The argument to be pushed onto the stack.
+ * push - Pushes an element to the stack
+ * @stack: Pointer to the stack
+ * @line_number: Line number in the file
+ * @value: Value to push
  *
- * Description: The push function pushes an element to the stack.
- * If the argument is not an integer or if there is no argument given,
- * it prints an error message and exits with the status EXIT_FAILURE.
- * It then converts the argument to an integer using the atoi function
- * and adds the integer value to the stack.
+ * Return: 1 on success, 0 on failure
  */
-void push(stack_t **stack, unsigned int line_number, char *argument)
+int push(stack_t *stack, unsigned int line_number, int value)
 {
-int value;
+    if (stack->size >= STACK_SIZE)
+    {
+        fprintf(stderr, "L%u: Stack overflow\n", line_number);
+        return (0);
+    }
 
-if (argument == NULL)
-{
-fprintf(stderr, "L%u: usage: push integer\n", line_number);
-exit(EXIT_FAILURE);
-}
-
-if (!is_integer(argument))
-{
-fprintf(stderr, "L%u: usage: push integer\n", line_number);
-exit(EXIT_FAILURE);
-}
-
-value = atoi(argument);
-add_node(stack, value);
+    stack->stack[stack->size++] = value;
+    return (1);
 }
 
 /**
- * is_integer - Checks if a string is an integer.
- * @str: The string to be checked.
- *
- * Return: 1 if the string is an integer, 0 otherwise.
- *
- * Description: The is_integer function checks if a string is an integer.
- * It returns 1 if the string consists of only digits, and 0 otherwise.
+ * pall - Prints all the values on the stack
+ * @stack: Pointer to the stack
  */
-int is_integer(char *str)
+void pall(stack_t *stack)
 {
-int i = 0;
+    size_t i;
 
-if (str == NULL)
-return (0);
-
-if (str[i] == '-')
-i++;
-
-for (; str[i] != '\0'; i++)
-{
-if (!isdigit(str[i]))
-return (0);
+    for (i = stack->size; i > 0; i--)
+        printf("%d\n", stack->stack[i - 1]);
 }
 
-return (1);
+/**
+ * main - Entry point
+ * @argc: Argument count
+ * @argv: Argument vectors
+ *
+ * Return: EXIT_SUCCESS on success, EXIT_FAILURE on failure
+ */
+int main(int argc, char **argv)
+{
+    FILE *file;
+    char *line = NULL, *opcode, *value_str;
+    size_t line_len = 0;
+    ssize_t read;
+    unsigned int line_number = 0;
+    int value;
+    stack_t stack = {NULL, 0};
+
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: push_pop <file>\n");
+        return (EXIT_FAILURE);
+    }
+
+    file = fopen(argv[1], "r");
+    if (!file)
+    {
+        fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+        return (EXIT_FAILURE);
+    }
+
+    while ((read = getline(&line, &line_len, file)) != -1)
+    {
+        line_number++;
+        opcode = strtok(line, " \n\t\r");
+        if (!opcode)
+            continue;
+
+        if (strcmp(opcode, "push") == 0)
+        {
+            value_str = strtok(NULL, " \n\t\r");
+            if (!value_str || !isdigit(*value_str) && *value_str != '-')
+            {
+                fprintf(stderr, "L%u: usage: push integer\n", line_number);
+                free(line);
+                fclose(file);
+                return (EXIT_FAILURE);
+            }
+            value = atoi(value_str);
+            if (!push(&stack, line_number, value))
+            {
+                free(line);
+                fclose(file);
+                return (EXIT_FAILURE);
+            }
+        }
+        else if (strcmp(opcode, "pall") == 0)
+        {
+            pall(&stack);
+        }
+    }
+
+    free(line);
+    fclose(file);
+    return (EXIT_SUCCESS);
 }
